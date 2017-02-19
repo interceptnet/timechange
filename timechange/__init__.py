@@ -111,12 +111,22 @@ class TimeChange:
         using the feature extraction method
         Keyword arguments:
         method -- Method used by extract_features to generate image data"""
+        #Clear the image reference cache
+        #TODO: DELETE OLD IMAGES OPTIONALLY
+        self.training_images.clear()
         for label, filenames in self.training_files.items():
             for input_filename in filenames:
+                #TODO: find file with most lines and use this to determine FFT pad size
                 #Generate a new filename for the output image
                 output_filename = list(os.path.split(input_filename)) #Splits the filename
                 output_filename[-1] = "{}_{}.png".format(label, output_filename[-1])
                 output_filename = os.path.join(*output_filename)
                 #Convert the csv
-                self.convert_csv(input_filename, output_filename)
-                print(label, input_filename)
+                self.convert_csv(input_filename, output_filename, data_size=512)
+                #Add image to dataset
+                self.training_images[label].add(output_filename)
+    def list_images(self):
+        for label, images in self.training_images.items():
+            print(label)
+            for image in images:
+                print("\t{}".format(image))
