@@ -99,7 +99,7 @@ class TimeChange:
         # Uses same variable name since data is not needed after feature extraction
         data = self.extract_features(data, method="fft", data_size=data_size)
         # Generate an image from the resulting feature representation
-        Image.fromarray(data * 255, 'L').save(output_filename)
+        Image.fromarray(data * 255, "L").save(output_filename)
     def set_data_schema(new_data_schema):
         """Sets the list of columns that will be read when handling a data set
         Keyword arguments:
