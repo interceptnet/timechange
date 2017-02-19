@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 from collections import defaultdict
 import sys
+import os
 import numpy as np
 import pandas
 from PIL import Image
 
 class TimeChange:
     def __init__(self, model=None):
-        """Constructor"""
+        """Constructor
+        """
         self.training_files = defaultdict(set)
+        self.training_images = defaultdict(set)
         self.model = model
+        self.data_schema = None
     def add_training_file(self, label, filename):
         """Adds a training file to the dataset under a specific label
         Keyword arguments:
@@ -39,10 +43,18 @@ class TimeChange:
         #TODO: implement this
         if method == "fft":
             # Perform a fourier transform on the data
-            features = np.abs(np.fft.rfft(time_series, n=data_size))
+            features = np.fft.rfft(time_series, n=data_size)
+            #Extract real features
+            real_features = np.real(features)
+            #Normalize real features
+            real_features /= np.max(real_features)
+            #Extract imaginary features
+            imag_features = np.imag(features)
+            #Normalize imaginary features
+            imag_features /= np.max(imag_features)
             #TODO: Extract complex features
             # Normalize the data against the maximum element
-            return features / np.max(features)
+            return np.concatenate((real_features, imag_features))
         else:
             print("Feature extraction method {} invalid.".format(method), file=sys.stderr)
             return None
@@ -59,27 +71,52 @@ class TimeChange:
         filename -- filename to read from
         *args -- Extra args to pass the pandas parser
         """
-        return pandas.read_csv(filename, nrows=1, *args, **kwargs).columns
-    def csv_to_image(self, filename, columns=None, method="fft", data_size=None):
+        return list(pandas.read_csv(filename, nrows=1, *args, **kwargs).columns)
+    def convert_csv(self, input_filename, output_filename=None, method="fft", data_size=None):
         """Reads a csv file and returns the column names
         Keyword arguments:
-        filename -- filename to read from
+        input_filename -- CSV filename to read from
+        output_filename -- png file to output to. Uses a standard scheme if None
         columns -- columns to read. If this is set to None, use all
         method -- feature extraction method to use
         """
         # Set default columns if no argument specified
-        if columns is None:
-            columns = get_csv_columns(filename)
+        if self.data_schema is None:
+            self.data_schema = self.get_csv_columns(filename)
+        # Set default filename if no argument specified
+        if output_filename is None:
+            input_path = os.path.split(input_filename)
+            input_path[-1] = "converted_{}.png".format(input_path[-1])
+            output_filename = os.path.join(input_path)
         # Read the csv into a numpy array
-        data = self.read_csv(filename, usecols=columns)
+        data = self.read_csv(input_filename, usecols=self.data_schema)
         # Determine an FFT size
         if data_size is None:
             #Get the next nearest power of 2 to the data size
-            data_size = 2 ** np.ceil(np.log2(data.shape[1]))
+            data_size = int(2 ** np.ceil(np.log2(data.shape[1])))
         #TODO: chunking
         # Extract features from the numpy array
         # Uses same variable name since data is not needed after feature extraction
         data = self.extract_features(data, method="fft", data_size=data_size)
         # Generate an image from the resulting feature representation
-        # 
-        return Image.fromarray(data * 255, 'L')
+        Image.fromarray(data * 255, 'L').save(output_filename)
+    def set_data_schema(new_data_schema):
+        """Sets the list of columns that will be read when handling a data set
+        Keyword arguments:
+        new_data_schema -- The list of columns to be used when reading data
+        """
+        self.data_schema = new_data_schema
+    def convert_all(self, method=None):
+        """Iterates over the training files set and generates corresponding images
+        using the feature extraction method
+        Keyword arguments:
+        method -- Method used by extract_features to generate image data"""
+        for label, filenames in self.training_files.items():
+            for input_filename in filenames:
+                #Generate a new filename for the output image
+                output_filename = list(os.path.split(input_filename)) #Splits the filename
+                output_filename[-1] = "{}_{}.png".format(label, output_filename[-1])
+                output_filename = os.path.join(*output_filename)
+                #Convert the csv
+                self.convert_csv(input_filename, output_filename)
+                print(label, input_filename)
