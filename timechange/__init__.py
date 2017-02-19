@@ -82,7 +82,7 @@ class TimeChange:
         """
         # Set default columns if no argument specified
         if self.data_schema is None:
-            self.data_schema = self.get_csv_columns(filename)
+            self.data_schema = self.get_csv_columns(input_filename)
         # Set default filename if no argument specified
         if output_filename is None:
             input_path = os.path.split(input_filename)
@@ -106,7 +106,7 @@ class TimeChange:
         new_data_schema -- The list of columns to be used when reading data
         """
         self.data_schema = new_data_schema
-    def convert_all(self, method=None):
+    def convert_all(self, method=None, data_size=1024):
         """Iterates over the training files set and generates corresponding images
         using the feature extraction method
         Keyword arguments:
@@ -122,7 +122,7 @@ class TimeChange:
                 output_filename[-1] = "{}_{}.png".format(label, output_filename[-1])
                 output_filename = os.path.join(*output_filename)
                 #Convert the csv
-                self.convert_csv(input_filename, output_filename, data_size=512)
+                self.convert_csv(input_filename, output_filename, method=method, data_size=data_size)
                 #Add image to dataset
                 self.training_images[label].add(output_filename)
     def list_images(self):
