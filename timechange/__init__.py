@@ -5,6 +5,7 @@ import os
 import numpy as np
 import pandas
 from PIL import Image
+from . import transform
 
 class TimeChange:
     def __init__(self, model=None):
@@ -36,28 +37,10 @@ class TimeChange:
         """Extracts features from a time series or array of time series and outputs an image
         Keyword arguments:
         time_series -- A numpy array or array of numpy arrays representing the time series data
+        method -- the type of feature extraction to use
+        data_size -- Used for some feature extraction methods. Pads or truncates data
         """
-        #Fix data size
-        if data_size is None:
-            data_size = time_series.shape[1]
-        #TODO: implement this
-        if method == "fft":
-            # Perform a fourier transform on the data
-            features = np.fft.rfft(time_series, n=data_size)
-            #Extract real features
-            real_features = np.real(features)
-            #Normalize real features
-            real_features /= np.max(real_features)
-            #Extract imaginary features
-            imag_features = np.imag(features)
-            #Normalize imaginary features
-            imag_features /= np.max(imag_features)
-            #TODO: Extract complex features
-            # Normalize the data against the maximum element
-            return np.concatenate((real_features, imag_features))
-        else:
-            print("Feature extraction method {} invalid.".format(method), file=sys.stderr)
-            return None
+        return transform.extract(time_series, method, data_size)
     def read_csv(self, filename, *args, **kwargs):
         """Reads a time-series data csv into a file
         Keyword arguments:
