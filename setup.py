@@ -11,3 +11,4 @@ setup(
     license="MIT",
     long_description=open("README.rst","r").read(),
 )
+
