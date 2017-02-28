@@ -20,7 +20,7 @@ def extract(time_series, method="fft", data_size=None):
 #TODO: separate real and imaginary components so as not to lose data
 #TODO: split time series into chunks
 #TODO: ignoring values with little information
-def simple_fft(time_series, data_size = None):
+def simple_fourier(time_series, data_size = None):
     """Performs a basic fourier transform across the entire time series. The imaginary results are normalized.
     Keyword arguments:
     time_series -- The time series analyse as a numpy array. Can also be a 2d array.
