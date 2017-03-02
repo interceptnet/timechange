@@ -4,6 +4,8 @@ import os
 import json
 import numpy as np
 from scipy import signal
+#Add one level up to timechange
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import timechange
 """DEBUG
 """

@@ -64,7 +64,7 @@ class TimeChange:
         data = pandas.read_csv(input_filename, usecols=self.columns).as_matrix().T
         # Extract features from the numpy array
         # Uses same variable name since data is not needed after feature extraction
-        data = transform.extract(data, method="fft", data_size=chunk_size)
+        data = transform.extract(data, method, data_size=chunk_size)
         # Generate an image from the resulting feature representation
         Image.fromarray(data * 255, "L").save(output_filename)
     def convert_all(self, method=None, chunk_size=1024):
@@ -73,4 +73,29 @@ class TimeChange:
         Keyword arguments:
         method -- Method used by extract_features to generate image data"""
         #TODO: implement this
-        print("DUMMY: CONVERTING ALL CSV FILES") 
+        print("DUMMY: CONVERTING ALL CSV FILES")
+    def train(self):
+        """Trains a neural net model on the project's dataset
+        """
+        #TODO: implement this
+        print("DUMMY: TRAINING A NEURAL NET MODEL")
+    def load_model(self, input_filename):
+        """Loads a neural net model from a file
+        Keyword arguments:
+        input_filename -- h5 file to load the model from
+        """
+        #TODO: implement
+        print("DUMMY: LOADING MODEL FROM {}".format(input_filename))
+        pass
+    def save_model(self, output_filename=None):
+        """Saves the current neural net model
+        Keyword arguments:
+        output_filename -- The place the model will be stored. None stores it in the profile"""
+        #Handle default filenames
+        if output_filename is None:
+            #TODO: implement
+            output_filename = "model.h5"
+            pass
+        #TODO: implement
+        print("DUMMY: outputting model to {}".format(output_filename))
+
