@@ -20,7 +20,56 @@ class TimeChange:
             parent_folder = os.path.expanduser("~/timechange")
         #Stores where the project profile will be kept
         self.project_path = os.path.join(parent_folder, project_name)
+        #Create the project parent folder if necessary
+        #If not, assume the project already exists
+        if not os.path.exists(self.project_path):
+            #New project
+            os.makedirs(self.project_path)
+            #Make project skeleton
+            os.mkdir(os.path.join(self.project_path, "csv"))
+            os.mkdir(os.path.join(self.project_path, "images"))
+            os.mkdir(os.path.join(self.project_path, "models"))
+        else:
+            #Existing project
+            #Check if csv directory exists
+            if os.path.exists(os.path.join(self.project_path, "csv")):
+                #Check if all files in that folder are csv files
+                for label in os.scandir(os.path.join(self.project_path, "csv")):
+                    for entry in os.scandir(os.path.join(self.project_path, "csv", label.name)):
+                        if not entry.name.endswith("csv"):
+                            raise RuntimeError("{} is not a csv file".format(os.path.join(self.project_path, "csv", entry.name)))
+            else:
+                #CSV directory does not exist
+                raise RuntimeError("{} cannot be a timechange project because {} does not exist".format(
+                    self.project_path,
+                    os.path.join(self.project_path, "csv")))
+            #Check if images directory exists
+            if os.path.exists(os.path.join(self.project_path, "images")):
+                #Check if all files in that folder are csv files
+                for label in os.scandir(os.path.join(self.project_path, "images")):
+                    for entry in os.scandir(os.path.join(self.project_path, "images", label.name)):
+                        #TODO: allow other extensions
+                        if not entry.name.endswith("png"):
+                            raise RuntimeError("{} is not a png file".format(os.path.join(self.project_path, "images", entry.name)))
+            else:
+                #Image directory does not exist
+                raise RuntimeError("{} cannot be a timechange project because {} does not exist".format(
+                    self.project_path,
+                    os.path.join(self.project_path, "images")))
+            #Check if images directory exists
+            if os.path.exists(os.path.join(self.project_path, "models")):
+                #Check if all files in that folder are csv files
+                for label in os.scandir(os.path.join(self.project_path, "models")):
+                    for entry in os.scandir(os.path.join(self.project_path, "models", label.name)):
+                        if not entry.name.endswith("h5"):
+                            raise RuntimeError("{} is not an h5 file".format(os.path.join(self.project_path, "models", entry.name)))
+            else:
+                #Image directory does not exist
+                raise RuntimeError("{} cannot be a timechange project because {} does not exist".format(
+                    self.project_path,
+                    os.path.join(self.project_path, "models")))
         #Stores what csv columns to use
+        #TODO: store this value in a file instead of as a private member
         self.columns = None #Default values
     def add_training_file(self, label, file_path):
         """Adds a training file to the dataset under a specific label
