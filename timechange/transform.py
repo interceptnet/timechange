@@ -73,6 +73,7 @@ def simple_fourier(time_series, chunk_size = None):
     #TODO: configure whether shuffled or stacked
     return np.concatenate((real_features, complex_features), axis=1) #shuffled
 
+
 def spectrogram(time_series):
     """Performs a basic fourier transform across the entire time series. The imaginary results are normalized.
     Keyword arguments:
@@ -82,7 +83,5 @@ def spectrogram(time_series):
     """
     #TODO: Implement scipy's spectrogram
     #Look here https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.spectrogram.html
-
-
     #Replace this with actual output
     return time_series

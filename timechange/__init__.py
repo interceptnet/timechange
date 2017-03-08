@@ -1,4 +1,34 @@
 #!/usr/bin/env python3
+
+"""Copyright 2017
+Steven Sheffey <stevensheffey4@gmail.com>,
+John Ford,
+Eyasu Asrat,
+Jordan Flowers,
+Joseph Volmer,
+Luke Stanley,
+Serenah Smith, and
+Chandu Budati
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+"""
+
 from collections import defaultdict
 import sys
 import os
@@ -7,8 +37,10 @@ import numpy as np
 import pandas
 from PIL import Image
 from . import transform
+
 #Keras includes
 from keras.preprocessing.image import ImageDataGenerator
+
 
 class TimeChange:
     def __init__(self, project_name="default", parent_folder=None):
@@ -80,6 +112,7 @@ class TimeChange:
         #Stores the keras model used for training
         #TODO: store this in a configuration file
         self.model = None
+
     def add_training_file(self, label, file_path):
         """Adds a training file to the dataset under a specific label
         Keyword arguments:
@@ -93,6 +126,7 @@ class TimeChange:
         #Uses the name of the original file.
         #TODO: generate better name
         shutil.copyfile(file_path, os.path.join(self.project_path, "csv", label, os.path.split(file_path)[1]))
+
     def remove_training_file(self, label, filename):
         """Removes a training file from a label
         Keyword arguments:
@@ -104,6 +138,8 @@ class TimeChange:
     def get_labels(self):
         """Gets a list of labels based on the csv data set"""
         return [entry.name for entry in os.scandir(os.path.join(self.project_path, "csv"))]
+        #TODO: implement this
+        print("DUMMY: {} REMOVED FROM {}".format(filename, label))
     def get_csv_columns(self, file_path, *args, **kwargs):
         """Reads a csv file and returns the column names
         Keyword arguments:
@@ -140,12 +176,16 @@ class TimeChange:
         img.save(output_file_path)
         #Return the image's size
         return img.size
+        data = transform.extract(data, method, data_size=chunk_size)
+        # Generate an image from the resulting feature representation
+        return Image.fromarray(data * 255, "L").save(output_file_path)
     def convert_all_csv(self, method=None, chunk_size=32):
         """Iterates over the training files set and generates corresponding images
         using the feature extraction method
         Keyword arguments:
         method -- Method used by extract_features to generate image data. Default: fft"""
         #TODO: implement this
+
         #Set a default method if none is set
         if method is None:
             method = self.default_method
