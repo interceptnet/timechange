@@ -93,7 +93,6 @@ else:
     print("Generating sample training data")
     for wave_type in ("sine","square","sawtooth"):
         os.makedirs(os.path.join(SAMPLE_DATA_FOLDER, wave_type))
-    #CSV header. Columns named by numbers (very creative)
     #Used to display progress
     last_progress = 0
     progress_step = NUM_TRAINING_SAMPLES // 10
@@ -224,7 +223,6 @@ for wave_type in ("sine","square","sawtooth"):
         os.makedirs(os.path.join(VALIDATION_DATA_FOLDER, wave_type))
     except FileExistsError as exc:
         pass
-
 #Used to display progress
 last_progress = 0
 progress_step = NUM_VALIDATION_SAMPLES // 10
@@ -292,6 +290,7 @@ validation_generator = ImageDataGenerator(
         VALIDATION_DATA_FOLDER, #Read training data from generated validation data folder
         target_size=time_change.image_size, #Resize must be set or the generator will automatically choose dimensions
         color_mode='rgb', #TODO: take another look at this
+        color_mode='grayscale', #TODO: take another look at this
         batch_size=32, #TODO: customize this
         shuffle=False, #No need to shuffle
         class_mode="categorical") #TODO: consider binary mode for systems with only 2 labels

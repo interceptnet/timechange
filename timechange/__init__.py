@@ -96,6 +96,7 @@ class TimeChange:
                     raise RuntimeError("{} cannot be a timechange project because {} does not exist".format(
                         self.project_path,
                         os.path.join(self.project_path, folder_name)))
+
         #Stores what csv columns to use
         #TODO: store this value in a file instead of as a private member
         self.columns = None #Default values
