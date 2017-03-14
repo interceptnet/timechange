@@ -49,6 +49,7 @@ def extract(time_series, method="fft", chunk_size=None):
 #TODO: separate real and imaginary components so as not to lose data
 #TODO: split time series into chunks
 #TODO: ignoring values with little information
+#TODO: version with axes
 def simple_fourier(time_series, chunk_size = None):
     """Performs a basic fourier transform across the entire time series. The imaginary results are normalized.
     Keyword arguments:

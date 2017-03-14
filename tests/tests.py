@@ -53,9 +53,9 @@ VALIDATION_DATA_FOLDER = os.path.join(PROJECT_PARENT, "VALIDATION_DATA")
 """Sample dataset parameters
 """
 #Number of training samples per category
-NUM_TRAINING_SAMPLES = 1000
+NUM_TRAINING_SAMPLES = 1500
 #Number of rows per training sample
-NUM_TRAINING_ROWS = 1000
+MAX_TRAINING_ROWS = 1000
 #Number of columns per training sample
 NUM_TRAINING_COLUMNS = 3
 #Bounds and parameters for sample waves
@@ -68,11 +68,11 @@ SAMPLE_FREQUENCY_MAX = 10
 SAMPLE_SHIFT_MIN = -10
 SAMPLE_SHIFT_MAX = 10
 #Number of samples to validate per category
-NUM_VALIDATION_SAMPLES = 100
+NUM_VALIDATION_SAMPLES = 1000
 #Parameters for data conversion
 CONVERT_CHUNK_SIZE=64
 #Metaparameters for training
-NUM_EPOCHS=20
+NUM_EPOCHS=15
 
 #Delete the test project from previous iterations (if it exists)
 try:
@@ -106,7 +106,7 @@ else:
         """
         columns = []
         #Generate a random-length wave space;
-        wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, NUM_TRAINING_ROWS), endpoint=True, dtype=np.float32)
+        wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, MAX_TRAINING_ROWS), endpoint=True, dtype=np.float32)
         for _ in range(NUM_TRAINING_COLUMNS):
             #Generate a wave
             columns.append(np.random.uniform(SAMPLE_AMPLITUDE_MIN, SAMPLE_AMPLITUDE_MAX) *
@@ -120,7 +120,7 @@ else:
         """
         columns = []
         #Generate a random-length wave space;
-        wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, NUM_TRAINING_ROWS), endpoint=True, dtype=np.float32)
+        wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, MAX_TRAINING_ROWS), endpoint=True, dtype=np.float32)
         for _ in range(NUM_TRAINING_COLUMNS):
             #Generate a wave
             columns.append(np.random.uniform(SAMPLE_AMPLITUDE_MIN, SAMPLE_AMPLITUDE_MAX) *
@@ -134,7 +134,7 @@ else:
         """
         columns = []
         #Generate a random-length wave space;
-        wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, NUM_TRAINING_ROWS), endpoint=True, dtype=np.float32)
+        wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, MAX_TRAINING_ROWS), endpoint=True, dtype=np.float32)
         for _ in range(NUM_TRAINING_COLUMNS):
             columns.append(np.random.uniform(SAMPLE_AMPLITUDE_MIN, SAMPLE_AMPLITUDE_MAX) *
                     signal.sawtooth(np.random.uniform(SAMPLE_FREQUENCY_MIN, SAMPLE_FREQUENCY_MAX) * (wave_space - 
@@ -189,27 +189,25 @@ print("{} images generated".format(time_change.num_samples))
 from keras.models import Sequential
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
+from keras.optimizers import SGD
 #First layer
 model = Sequential()
-model.add(Convolution2D(32, 3, 3, input_shape=(3, *time_change.image_size)))
-model.add(Activation('relu'))
+model.add(Convolution2D(32, 5, 5, input_shape=(3, *time_change.image_size), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 #Second layer
-model.add(Convolution2D(32, 3, 3))
-model.add(Activation('relu'))
+model.add(Convolution2D(32, 3, 3, activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 #Third layer
-model.add(Convolution2D(64, 3, 3))
-model.add(Activation('relu'))
+model.add(Convolution2D(64, 3, 3, activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
 #Flattening layer
 model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
-model.add(Dense(64))
-model.add(Activation('relu'))
+model.add(Dense(64, activation='relu'))
 model.add(Dropout(0.3)) #Dropout layers help to reduce overfitting
 model.add(Dense(len(time_change.get_labels()))) #Number of outputs corresponds to number of labels
 model.add(Activation('softmax'))
+#sgd = SGD(lr=1e-2, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
@@ -239,7 +237,7 @@ for sample_num in range(NUM_VALIDATION_SAMPLES):
     """
     columns = []
     #Generate a random-length wave space;
-    wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, NUM_TRAINING_ROWS), endpoint=True, dtype=np.float32)
+    wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, MAX_TRAINING_ROWS), endpoint=True, dtype=np.float32)
     for _ in range(NUM_TRAINING_COLUMNS):
         #Generate a wave
         columns.append(np.random.uniform(SAMPLE_AMPLITUDE_MIN, SAMPLE_AMPLITUDE_MAX) *
@@ -254,7 +252,7 @@ for sample_num in range(NUM_VALIDATION_SAMPLES):
     """
     columns = []
     #Generate a random-length wave space;
-    wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, NUM_TRAINING_ROWS), endpoint=True, dtype=np.float32)
+    wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, MAX_TRAINING_ROWS), endpoint=True, dtype=np.float32)
     for _ in range(NUM_TRAINING_COLUMNS):
         #Generate a wave
         columns.append(np.random.uniform(SAMPLE_AMPLITUDE_MIN, SAMPLE_AMPLITUDE_MAX) *
@@ -269,7 +267,7 @@ for sample_num in range(NUM_VALIDATION_SAMPLES):
     """
     columns = []
     #Generate a random-length wave space;
-    wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, NUM_TRAINING_ROWS), endpoint=True, dtype=np.float32)
+    wave_space = np.linspace(SAMPLE_LEFT_BOUND, SAMPLE_RIGHT_BOUND, np.random.randint(1, MAX_TRAINING_ROWS), endpoint=True, dtype=np.float32)
     for _ in range(NUM_TRAINING_COLUMNS):
         #Generate a wave
         columns.append(np.random.uniform(SAMPLE_AMPLITUDE_MIN, SAMPLE_AMPLITUDE_MAX) *
