@@ -290,7 +290,6 @@ validation_generator = ImageDataGenerator(
         VALIDATION_DATA_FOLDER, #Read training data from generated validation data folder
         target_size=time_change.image_size, #Resize must be set or the generator will automatically choose dimensions
         color_mode='rgb', #TODO: take another look at this
-        color_mode='grayscale', #TODO: take another look at this
         batch_size=32, #TODO: customize this
         shuffle=False, #No need to shuffle
         class_mode="categorical") #TODO: consider binary mode for systems with only 2 labels
